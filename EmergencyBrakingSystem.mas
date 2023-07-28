@@ -1,0 +1,499 @@
+/Program: Emergency Braking System.
+/Version: 1.0 alpha
+/Date: 09/05/2022
+/Authors: Emiliano Vivas Rodríguez; Nicolás Díaz Coronado.
+/Contact: a01424732@tec.mx; a01761223@tec.mx
+
+
+CLEAR
+        
+console_title_Message,	LOAD console_title_pointer
+				ADD iterator
+                STORE INDEX
+                CLEAR
+                ADDI INDEX
+                SKIPCOND 400
+                JUMP Next_Character_console_title_Message
+                JUMP if_mileage
+
+Next_Character_console_title_Message,	OUTPUT
+				LOAD iterator
+                ADD ONE
+                STORE iterator
+                JUMP console_title_Message
+
+if_mileage,	LOAD ZERO
+    	STORE iterator
+		LOAD mileage
+		SUBT mileage_attention
+		SKIPCOND 000
+		JUMP Print_Message
+        JUMP if_emergency_mode
+
+Print_Message,	LOAD revision_p
+				ADD iterator
+                STORE INDEX
+                CLEAR
+                ADDI INDEX
+                SKIPCOND 400
+                JUMP Next_Character
+                JUMP if_emergency_mode
+
+Next_Character,	OUTPUT
+				LOAD iterator
+                ADD ONE
+                STORE iterator
+                JUMP Print_Message
+
+if_emergency_mode,	INPUT
+    STORE emergency_mode
+	SKIPCOND 400
+	JUMP if_index_passengers1
+    JUMP end
+    
+if_index_passengers1, LOAD ZERO
+    STORE iterator
+    LOAD passengers
+    STORE auxiliar
+    JUMP while_safety_bell_status
+
+if_index_passengers2, LOAD ZERO
+    STORE iterator
+    LOAD passengers
+    STORE auxiliar
+    JUMP while_door_status
+    
+if_index_passengers3, LOAD ZERO
+    STORE iterator
+    LOAD passengers
+    STORE auxiliar
+    JUMP while_window_status
+    
+while_safety_bell_status,	LOAD safety_belt_status_p
+	ADD iterator
+    STORE INDEX
+    CLEAR
+    ADDI INDEX
+    LOAD auxiliar
+    SKIPCOND 400
+    JUMP do_safety_bell_status
+    JUMP if_index_passengers2
+
+do_safety_bell_status,	LOAD ONE
+	STOREI INDEX
+    LOADI INDEX
+	OUTPUT
+	LOAD auxiliar
+    SUBT ONE
+    STORE auxiliar
+    LOAD iterator
+    ADD ONE
+    STORE iterator
+    JUMP while_safety_bell_status
+    
+while_door_status,	LOAD door_status_p
+	ADD iterator
+    STORE INDEX
+    CLEAR
+    ADDI INDEX
+    LOAD auxiliar
+    SKIPCOND 400
+    JUMP do_door_status
+    JUMP if_index_passengers3
+
+do_door_status,	LOAD ZERO
+	STOREI INDEX
+    LOADI INDEX
+	OUTPUT
+	LOAD auxiliar
+    SUBT ONE
+    STORE auxiliar
+    LOAD iterator
+    ADD ONE
+    STORE iterator
+    JUMP while_door_status
+
+while_window_status,	LOAD window_status_p
+	ADD iterator
+    STORE INDEX
+    CLEAR
+    ADDI INDEX
+    LOAD auxiliar
+    SKIPCOND 400
+    JUMP do_window_status
+    JUMP if_index_devices
+
+do_window_status,	LOAD ZERO
+	STOREI INDEX
+    LOADI INDEX
+	OUTPUT
+	LOAD auxiliar
+    SUBT ONE
+    STORE auxiliar
+    LOAD iterator
+    ADD ONE
+    STORE iterator
+    JUMP while_window_status
+    
+if_index_devices, LOAD ZERO
+    STORE iterator
+    LOAD devices
+    STORE auxiliar
+    JUMP while_device_status
+
+while_device_status,	LOAD device_status_p
+	ADD iterator
+    STORE INDEX
+    CLEAR
+    ADDI INDEX
+    LOAD auxiliar
+    SKIPCOND 400
+    JUMP do_device_status
+    JUMP safety_mode_process
+
+do_device_status,	LOAD ZERO
+	STOREI INDEX
+    LOADI INDEX
+	OUTPUT
+	LOAD auxiliar
+    SUBT ONE
+    STORE auxiliar
+    LOAD iterator
+    ADD ONE
+    STORE iterator
+    JUMP while_device_status
+
+safety_mode_process, LOAD ONE
+    STORE safety_mode
+    OUTPUT
+    LOAD ZERO
+    STORE manual_engine_shutdown_mode
+	STORE manual_engine_acceleration_mode
+    OUTPUT
+    OUTPUT
+    LOAD ZERO
+    STORE iterator
+    LOAD vehicle_type
+    SKIPCOND 800
+	JUMP Neutral_Modo_Message
+    JUMP speed_reduction_process
+
+Neutral_Modo_Message,	LOAD neutral_p
+				ADD iterator
+                STORE INDEX
+                CLEAR
+                ADDI INDEX
+                SKIPCOND 400
+                JUMP Next_Character_Neutral_Modo_Message
+                JUMP speed_reduction_process
+
+Next_Character_Neutral_Modo_Message,	OUTPUT
+				LOAD iterator
+                ADD ONE
+                STORE iterator
+                JUMP Neutral_Modo_Message
+
+speed_reduction_Message,	LOAD speed_reduction_pointer
+				ADD iterator
+                STORE INDEX
+                CLEAR
+                ADDI INDEX
+                SKIPCOND 400
+                JUMP Next_Character_speed_reduction_Message
+                JUMP speed_reduction_process
+
+Next_Character_speed_reduction_Message,	OUTPUT
+				LOAD iterator
+                ADD ONE
+                STORE iterator
+                JUMP speed_reduction_Message
+
+speed_reduction_process, LOAD velocity
+	SKIPCOND 000
+    JUMP do_speed_reduction_process
+	LOAD ZERO
+    STORE velocity
+	JUMP end
+
+do_speed_reduction_process, OUTPUT
+	SUBT reduction
+	STORE velocity
+    LOAD ZERO
+    STORE iterator
+    JUMP speed_reduction_Message
+
+end, LOAD velocity
+    OUTPUT
+    HALT
+
+mileage_attention, DEC 12428
+passengers, DEC 4
+devices, DEC 3
+vehicle_type, DEC 0 / 0, automático; 1, manual.
+emergency_mode, DEC 0
+safety_mode, DEC 0
+manual_engine_shutdown_mode, DEC 1
+manual_engine_acceleration_mode, DEC 1
+velocity, DEC 50
+mileage, DEC 20000
+safety_belt_status_p, ADR safety_belt_status
+safety_belt_status, DEC 0
+	DEC 1
+    DEC 0
+    DEC 1
+door_status_p, ADR door_status
+door_status, DEC 1
+	DEC 1
+    DEC 0
+    DEC 1
+window_status_p, ADR window_status
+window_status, DEC 0
+	DEC 1
+    DEC 0
+    DEC 1
+device_status_p, ADR device_status
+device_status, DEC 1
+	DEC 1
+    DEC 1
+auxiliar, DEC 0
+ONE, DEC 1
+ZERO, DEC 0
+reduction, DEC 10
+iterator, DEC 0
+INDEX, HEX 0
+console_title_pointer, ADR console_title_string
+console_title_string, HEX A
+	HEX 53 /S
+    HEX	69 /i
+    HEX	73 /s
+    HEX 74 /t
+    HEX	65 /e
+    HEX 6D /m
+    HEX 61 /a
+    HEX 20 / 
+    HEX 64 /d
+    HEX	65 /e
+    HEX 20 / 
+    HEX 66 /f
+    HEX 72 /r
+    HEX 65 /e
+    HEX	6E /n
+    HEX 61 /a
+    HEX 64 /d
+    HEX	6F /o
+    HEX 20 / 
+    HEX 64 /d
+    HEX	65 /e
+    HEX 20 / 
+    HEX 65 /e
+    HEX 6D /m
+    HEX 65 /e
+    HEX 72 /r
+    HEX 67 /g
+    HEX 65 /e
+    HEX	6E /n
+    HEX 63 /c
+    HEX	69 /i
+    HEX 61 /a
+    HEX	2E / .
+    HEX A
+    HEX A
+    HEX	0
+revision_p, ADR	revision_s
+revision_s, HEX	52 /R
+	HEX	65 /e
+    HEX	76 /v
+    HEX	69 /i
+    HEX	73 /s
+    HEX	69 /i
+    HEX	6F /o
+    HEX	6E /n
+    HEX 20 / 
+    HEX 64 /d
+    HEX	65 /e
+    HEX 6C /l
+    HEX 20 / 
+    HEX 73 /s
+    HEX	69 /i
+    HEX	73 /s
+    HEX 74 /t
+    HEX	65 /e
+    HEX 6D /m
+    HEX 61 /a
+    HEX 20 / 
+    HEX 64 /d
+    HEX	65 /e
+    HEX 20 / 
+    HEX 66 /f
+    HEX 72 /r
+    HEX 65 /e
+    HEX	6E /n
+    HEX 61 /a
+    HEX 64 /d
+    HEX	6F /o
+    HEX 20 / 
+    HEX 6E /n
+    HEX	65 /e
+    HEX 63 /c
+    HEX	65 /e
+    HEX 73 /s
+    HEX 61 /a
+    HEX 72 /r
+    HEX	69 /i
+    HEX 61 /a
+    HEX	2E / .
+    HEX	A
+    HEX	A
+    HEX	0
+neutral_p, ADR	neutral_s
+neutral_s, HEX A
+	HEX A
+	HEX 4D /M
+	HEX 6F /o
+    HEX 64 /d
+    HEX 6F /o
+    HEX 20 / 
+    HEX 4E /N
+    HEX 65 /e
+    HEX 75 /u
+    HEX 74 /t
+    HEX 72 /r
+    HEX 61 /a
+    HEX 6C /l
+    HEX 20 / 
+    HEX 28 /(
+    HEX 4E /N
+    HEX 29 /)
+    HEX 20 / 
+    HEX 61 /a
+    HEX 63 /c
+    HEX 74 /t
+    HEX	69 /i
+    HEX 76 /v
+    HEX 61 /a
+    HEX 64 /d
+    HEX	6F /o
+    HEX 2E /.
+    HEX A
+    HEX A
+    HEX 5F /_
+    HEX A
+    HEX A
+    HEX 0
+speed_reduction_pointer, ADR speed_reduction_string
+speed_reduction_string, HEX A
+    HEX A
+	Hex 52 /R
+	HEX 65 /e
+    HEX 64 /d
+    HEX 75 /u
+    HEX 63 /c
+    HEX 63 /c
+    HEX	69 /i
+    HEX	6F /o
+    HEX	6E /n
+    HEX 20 /
+    HEX 67 /g
+    HEX 72 /r
+    HEX 61 /a
+    HEX 64 /d
+    HEX 75 /u
+    HEX 61 /a
+    HEX 6C /l
+    HEX 2E /.
+    HEX A
+    HEX 46 /F
+    HEX 72 /r
+    HEX 65 /e
+    HEX	6E /n
+    HEX	6F /o
+    HEX 2E /.
+    HEX A
+    HEX 49 /I
+    HEX	6E /n
+    HEX 74 /t
+    HEX 65 /e
+    HEX 72 /r
+    HEX 6D /m
+    HEX	69 /i
+    HEX 74 /t
+    HEX 65 /e
+    HEX	6E /n
+    HEX 74 /t
+    HEX 65 /e
+    HEX 73 /s
+    HEX 20 / 
+    HEX 65 /e
+    HEX 6E /n
+    HEX 63 /c
+    HEX 65 /e
+    HEX 6E /n
+    HEX 64 /d
+    HEX	69 /i
+    HEX 64 /d
+    HEX 61 /a
+    HEX 73 /s
+    HEX 2E /.
+    HEX A
+    HEX 42 /B
+    HEX	6F /o
+    HEX 63 /c
+    HEX	69 /i
+    HEX 6E /n
+    HEX 61 /a
+    HEX 20 /
+    HEX 65 /e
+    HEX 6E /n
+    HEX 63 /c
+    HEX 65 /e
+    HEX 6E /n
+    HEX 64 /d
+    HEX	69 /i
+    HEX 64 /d
+    HEX 61 /a
+    HEX 2E /.
+    HEX A
+    HEX 42 /B
+    HEX	6F /o
+    HEX 63 /c
+    HEX	69 /i
+    HEX 6E /n
+    HEX 61 /a
+    HEX 20 /
+    HEX 61 /a
+    HEX 70 /p
+    HEX 61 /a
+    HEX 67 /g
+    HEX 61 /a
+    HEX 64 /d
+    HEX 61 /a
+    HEX 2E /.
+    HEX A
+    HEX 49 /I
+    HEX	6E /n
+    HEX 74 /t
+    HEX 65 /e
+    HEX 72 /r
+    HEX 6D /m
+    HEX	69 /i
+    HEX 74 /t
+    HEX 65 /e
+    HEX	6E /n
+    HEX 74 /t
+    HEX 65 /e
+    HEX 73 /s
+    HEX 20 /
+    HEX 61 /a
+    HEX 70 /p
+    HEX 61 /a
+    HEX 67 /g
+    HEX 61 /a
+    HEX 64 /d
+    HEX 61 /a
+    HEX 73 /s
+    HEX 2E /.
+    HEX A
+    HEX 5F /_
+    HEX A
+    HEX A
+    HEX 0
